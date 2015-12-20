@@ -28,6 +28,12 @@ namespace SmartSync
             }
         }
 
+        public static void OnMailboxChanged(EmailMailbox sender, EmailMailboxChangedEventArgs args)
+        {
+            var task = Task.Run(async () => { await sender.SyncManager.SyncAsync(); });
+            task.Wait();
+        }
+
         private static readonly Lazy<EmailManager> instance = new Lazy<EmailManager>(() => new EmailManager());
         private IReadOnlyList<EmailMailbox> mailboxes;
 
@@ -51,7 +57,7 @@ namespace SmartSync
             List<EmailMailbox> localMailboxes = new List<EmailMailbox>();
             foreach (var account in userAccounts)
             {
-                 localMailboxes.AddRange(await account.FindEmailMailboxesAsync());
+                localMailboxes.AddRange(await account.FindEmailMailboxesAsync());
             }
 
             return localMailboxes.AsReadOnly();
@@ -67,12 +73,6 @@ namespace SmartSync
             {
                 mailbox.MailboxChanged += OnMailboxChanged;
             }
-        }
-
-        private static void OnMailboxChanged(EmailMailbox sender, EmailMailboxChangedEventArgs args)
-        {
-            var task = Task.Run(async () => { await sender.SyncManager.SyncAsync(); });
-            task.Wait();
         }
     }
 }
