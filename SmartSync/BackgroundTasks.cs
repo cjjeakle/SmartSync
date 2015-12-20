@@ -10,12 +10,13 @@ namespace SmartSync
     /// <summary>
     /// A background tasks which wathces for email triage events, 
     /// and force syncs them.
+    /// TODO: Implement this.
     /// </summary>
     public sealed class SmartSync : IBackgroundTask
     {
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            EmailManager.Instance.ForceSync();
+            throw new NotImplementedException();
         }
     }
 }
