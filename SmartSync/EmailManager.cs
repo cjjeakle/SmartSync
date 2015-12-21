@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Email;
 using Windows.ApplicationModel.UserDataAccounts;
-using Windows.Foundation;
 
 namespace SmartSync
 {
+    /// <summary>
+    /// A singleton class which keeps track of any available email accounts,
+    /// and provides an interface to keep them synced with the server.
+    /// </summary>
     class EmailManager
     {
         public static EmailManager Instance { get { return instance.Value; } }
@@ -18,9 +21,9 @@ namespace SmartSync
         public void initState() { }
 
         /// <summary>
-        /// Force-syncs every email account on the machine.
+        /// Invokes a sync for every email account on the machine.
         /// </summary>
-        public async void ForceSync()
+        public async void SyncAllAccounts()
         {
             foreach (var mailbox in mailboxes)
             {
@@ -28,6 +31,11 @@ namespace SmartSync
             }
         }
 
+        /// <summary>
+        /// An event handler to invoke a sync when a mailbox changes.
+        /// </summary>
+        /// <param name="sender">The email mailbox which changed.</param>
+        /// <param name="args">Any arguments sent with the event.</param>
         public static void OnMailboxChanged(EmailMailbox sender, EmailMailboxChangedEventArgs args)
         {
             var task = Task.Run(async () => { await sender.SyncManager.SyncAsync(); });
@@ -37,35 +45,39 @@ namespace SmartSync
         private static readonly Lazy<EmailManager> instance = new Lazy<EmailManager>(() => new EmailManager());
         private IReadOnlyList<EmailMailbox> mailboxes;
 
+        /// <summary>
+        /// Constructs a new instance of the EmailManager class.
+        /// Automatically assembles a list of email accounts on this machine,
+        /// and attaches event listeners to each of them to detect and sync changes.
+        /// </summary>
         private EmailManager()
         {
-            var task = Task.Run(async () => { mailboxes = await getAllMailboxes(); });
+            var task = Task.Run(async () => { mailboxes = await GetAllMailboxes(); });
             task.Wait();
             AttachChangeListeners();
         }
 
-        private static async Task<IReadOnlyList<EmailMailbox>> getAllMailboxes()
+        /// <summary>
+        /// Asynchronously gets every mailbox available on the machine.
+        /// </summary>
+        /// <returns>A list of email accounts on this machine.</returns>
+        private static async Task<IReadOnlyList<EmailMailbox>> GetAllMailboxes()
         {
-            UserDataAccountStore store = await UserDataAccountManager.RequestStoreAsync(UserDataAccountStoreAccessType.AllAccountsReadOnly);
+            var accountManager = await UserDataAccountManager.RequestStoreAsync(UserDataAccountStoreAccessType.AllAccountsReadOnly);
+            var userAccounts = await accountManager.FindAccountsAsync();
 
-            IReadOnlyList<UserDataAccount> userAccounts = new List<UserDataAccount>().AsReadOnly();
-            if (store != null)
-            {
-                userAccounts = await store.FindAccountsAsync();
-            }
-
-            List<EmailMailbox> localMailboxes = new List<EmailMailbox>();
+            List<EmailMailbox> availableMailboxes = new List<EmailMailbox>();
             foreach (var account in userAccounts)
             {
-                localMailboxes.AddRange(await account.FindEmailMailboxesAsync());
+                availableMailboxes.AddRange(await account.FindEmailMailboxesAsync());
             }
 
-            return localMailboxes.AsReadOnly();
+            return availableMailboxes.AsReadOnly();
         }
 
         /// <summary>
         /// Attaches an event listener to every email account on the machine.
-        /// This listener forces a sync after any change to an email account.
+        /// This listener invokes a sync after any change to an email account.
         /// </summary>
         private void AttachChangeListeners()
         {
