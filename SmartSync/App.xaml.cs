@@ -91,7 +91,7 @@ namespace SmartSync
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            EmailManager.Instance.SyncAllAccounts(); // Sync every email account before the app is suspended.
+            EmailManager.Instance.SyncAllAccountsAsync(); // Sync every email account before the app is suspended.
             deferral.Complete();
         }
     }

@@ -23,7 +23,7 @@ namespace SmartSync
         /// <summary>
         /// Invokes a sync for every email account on the machine.
         /// </summary>
-        public async void SyncAllAccounts()
+        public async void SyncAllAccountsAsync()
         {
             foreach (var mailbox in mailboxes)
             {
@@ -38,12 +38,22 @@ namespace SmartSync
         /// <param name="args">Any arguments sent with the event.</param>
         public static void OnMailboxChanged(EmailMailbox sender, EmailMailboxChangedEventArgs args)
         {
-            var task = Task.Run(async () => { await sender.SyncManager.SyncAsync(); });
-            task.Wait();
+            bool syncEnabled = Instance.syncEnabled[sender.Id];
+
+            // Flip the guard used to keep the following sync from triggering this event handler infinitely
+            Instance.syncEnabled[sender.Id] = !syncEnabled;
+
+            if (syncEnabled)
+            {
+                sender.SyncManager.SyncAsync();
+            }
+
+            System.Diagnostics.Debug.WriteLine("Test");
         }
 
         private static readonly Lazy<EmailManager> instance = new Lazy<EmailManager>(() => new EmailManager());
         private IReadOnlyList<EmailMailbox> mailboxes;
+        private Dictionary<string, bool> syncEnabled; // A table of gurads used to prevent OnMailboxChanged's sync from invoking itself
 
         /// <summary>
         /// Constructs a new instance of the EmailManager class.
@@ -52,7 +62,8 @@ namespace SmartSync
         /// </summary>
         private EmailManager()
         {
-            var task = Task.Run(async () => { mailboxes = await GetAllMailboxes(); });
+            syncEnabled = new Dictionary<string, bool>();
+            var task = Task.Run(async () => { mailboxes = await GetAllMailboxesAsync(); });
             task.Wait();
             AttachChangeListeners();
         }
@@ -61,7 +72,7 @@ namespace SmartSync
         /// Asynchronously gets every mailbox available on the machine.
         /// </summary>
         /// <returns>A list of email accounts on this machine.</returns>
-        private static async Task<IReadOnlyList<EmailMailbox>> GetAllMailboxes()
+        private static async Task<IReadOnlyList<EmailMailbox>> GetAllMailboxesAsync()
         {
             var accountManager = await UserDataAccountManager.RequestStoreAsync(UserDataAccountStoreAccessType.AllAccountsReadOnly);
             var userAccounts = await accountManager.FindAccountsAsync();
@@ -69,6 +80,7 @@ namespace SmartSync
             List<EmailMailbox> availableMailboxes = new List<EmailMailbox>();
             foreach (var account in userAccounts)
             {
+                
                 availableMailboxes.AddRange(await account.FindEmailMailboxesAsync());
             }
 
@@ -83,6 +95,7 @@ namespace SmartSync
         {
             foreach (var mailbox in mailboxes)
             {
+                syncEnabled.Add(mailbox.Id, true);
                 mailbox.MailboxChanged += OnMailboxChanged;
             }
         }
