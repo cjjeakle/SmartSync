@@ -53,7 +53,7 @@ namespace SmartSync
 
         private static readonly Lazy<EmailManager> instance = new Lazy<EmailManager>(() => new EmailManager());
         private IReadOnlyList<EmailMailbox> mailboxes;
-        private Dictionary<string, bool> syncEnabled; // A table of gurads used to prevent OnMailboxChanged's sync from invoking itself
+        private Dictionary<string, bool> syncEnabled; // A table of guards used to prevent OnMailboxChanged's sync from invoking itself
 
         /// <summary>
         /// Constructs a new instance of the EmailManager class.
