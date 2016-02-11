@@ -8,6 +8,14 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <StackPanel x:Name="contentPanel" Margin="30,30,30,30">
+            <TextBlock Text="Hello, world!" Margin="0,0,0,10"/>
+            <TextBlock TextWrapping="WrapWholeWords" Text=""/>
+            <TextBlock TextWrapping="WrapWholeWords" Text="So long as this app is running, any changes made in the mail app will immediately propagate to the server."/>
+            <TextBlock TextWrapping="WrapWholeWords" Text=""/>
+            <TextBlock TextWrapping="WrapWholeWords" Text="No need to worry about efficiency, this app will only do work when changes occur!"/>
+            <TextBlock TextWrapping="WrapWholeWords" Text=""/>
+            <TextBlock TextWrapping="WrapWholeWords" Text="Simply close this app when done."/>
+        </StackPanel>
     </Grid>
 </Page>

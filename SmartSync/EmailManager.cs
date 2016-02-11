@@ -40,7 +40,7 @@ namespace SmartSync
         {
             bool syncEnabled = Instance.syncEnabled[sender.Id];
 
-            // Flip the guard used to keep the following sync from triggering this event handler infinitely
+            // Flip a guard used to keep the following sync from triggering this event handler infinitely
             Instance.syncEnabled[sender.Id] = !syncEnabled;
 
             if (syncEnabled)
