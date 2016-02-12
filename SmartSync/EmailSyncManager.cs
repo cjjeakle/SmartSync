@@ -67,7 +67,7 @@ namespace SmartSync
             /// Atomically reads the current guard boolean value, flips that value, and returns it.
             /// </summary>
             /// <returns>The guard bool's value prior to being flipped.</returns>
-            public bool atomicTestAndFlip()
+            public bool AtomicTestAndFlip()
             {
                 mutex.WaitOne();
                 bool previousGuardValue = guard;
@@ -145,7 +145,7 @@ namespace SmartSync
         private static void OnMailboxChanged(EmailMailbox sender, EmailMailboxChangedEventArgs args)
         {
             // Flip a guard used to keep the following sync from triggering this event handler infinitely
-            if (Instance.syncEnabled[sender.Id].atomicTestAndFlip())
+            if (Instance.syncEnabled[sender.Id].AtomicTestAndFlip())
             {
                 sender.SyncManager.SyncAsync();
             }
