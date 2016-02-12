@@ -18,7 +18,7 @@ namespace SmartSync
         }
 
         /// <summary>
-        /// Opens the Windows Mail App by creating an empty email composition window.
+        /// Opens the Windows mail app by creating an empty email composition window.
         /// </summary>
         /// <param name="sender">The event's sender.</param>
         /// <param name="e">Any arguments accompanying the event.</param>

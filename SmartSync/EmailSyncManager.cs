@@ -42,7 +42,7 @@ namespace SmartSync
 
         /// <summary>
         /// Maintains a guard boolean value and 
-        /// provides an interface to atomically read and flip thay value.
+        /// provides an interface to atomically read and flip that value.
         /// </summary>
         private class AtomicGuard
         {
