@@ -11,11 +11,11 @@
         <StackPanel x:Name="contentPanel" HorizontalAlignment="Center" Width="300" Margin="30,30,30,30">
             <TextBlock Text="Hello, world!" Margin="0,0,0,10"/>
             <TextBlock TextWrapping="WrapWholeWords" Text=""/>
-            <TextBlock TextWrapping="WrapWholeWords" Text="So long as this app is running, any changes made in the mail app will immediately propagate to the server."/>
+            <TextBlock TextWrapping="WrapWholeWords" Text="While this program is running, any changes made in the mail app will immediately propagate to the server."/>
             <TextBlock TextWrapping="WrapWholeWords" Text=""/>
-            <TextBlock TextWrapping="WrapWholeWords" Text="No need to worry about efficiency, this app will only do work when changes occur!"/>
+            <TextBlock TextWrapping="WrapWholeWords" Text="No need to worry about efficiency, your mail will only sync when local changes occur."/>
             <TextBlock TextWrapping="WrapWholeWords" Text=""/>
-            <TextBlock TextWrapping="WrapWholeWords" Text="Simply close this app when done."/>
+            <TextBlock TextWrapping="WrapWholeWords" Text="Simply close this app when you're done with your email."/>
             <Rectangle Height="1" Fill="LightGray" Margin="0,15,0,15"/>
             <TextBlock TextWrapping="WrapWholeWords" Text="Click below to open the mail app (by creating a new empty message):"/>
             <Button x:Name="inputButton" Content="Open the Mail App" Click="OpenMailApp" Margin="0,15,0,15"/>
